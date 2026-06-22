@@ -1,0 +1,45 @@
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+.env
+.DS_Store
+*.log
+
+# Raw and heavy data
+data/raw/*
+data/processed/*
+models/*
+*.pkl
+*.joblib
+*.db
+
+# Streamlit secrets
+.streamlit/secrets.toml
+
+# Keep lightweight portfolio files
+!data/external/
+!data/external/*.csv
+
+!reports/
+!reports/figures/
+!reports/figures/*.png
+
+!dashboard/
+!dashboard/streamlit/
+!dashboard/streamlit/app.py
+!dashboard/streamlit/requirements.txt
+
+!notebooks/
+!notebooks/*.ipynb
+
+!sql/
+!sql/*.sql
+
+!src/
+!src/*.py
+
+!README.md
+!requirements.txt
+!.gitignore

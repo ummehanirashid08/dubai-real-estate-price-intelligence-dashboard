@@ -1,0 +1,2 @@
+raw_rows,raw_columns,cleaned_rows,cleaned_columns,rows_removed,start_date,end_date,total_transactions,total_sales_value,average_transaction_value,average_price_per_sqm
+1047965,46,1044151,27,3814,1995-03-07,2023-03-17,1044151,2670352977548.0,2557439.467613401,12858.06306821523
