@@ -92,6 +92,22 @@ The Streamlit dashboard includes:
 - Property Type Analysis
 - Machine Learning Price Prediction
 - Forecasting
+## Dashboard Preview
+
+### Executive Overview
+![Executive Overview](reports/figures/dashboard_executive_overview.png.png)
+
+### Area Intelligence
+![Area Intelligence](reports/figures/dashboard_area_intelligence.png.png)
+
+### Property Type Analysis
+![Property Type Analysis](reports/figures/dashboard_property_type_analysis.png.png)
+
+### Machine Learning Price Prediction
+![ML Price Prediction](reports/figures/dashboard_ml_prediction.png.png)
+
+### Forecasting
+![Forecasting](reports/figures/dashboard_forecasting.png.png)
 
 ## Key Features
 
