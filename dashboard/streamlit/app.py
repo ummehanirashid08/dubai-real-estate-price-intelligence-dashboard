@@ -762,27 +762,61 @@ def build_live_forecast(base_df, months=12):
         .sort_values("year_month_sort")
     )
 
-    forecast_input["date"] = pd.to_datetime(forecast_input["year_month_sort"] + "-01", errors="coerce")
+    forecast_input["date"] = pd.to_datetime(
+        forecast_input["year_month_sort"] + "-01",
+        errors="coerce"
+    )
+
     forecast_input = forecast_input.dropna(subset=["date", "average_price"])
+    forecast_input = forecast_input[forecast_input["average_price"] > 0]
 
     if len(forecast_input) < 12:
         return pd.DataFrame(), forecast_input
 
-    forecast_input["time_index"] = np.arange(len(forecast_input))
+    # Use recent market behavior instead of full old history.
+    recent_df = forecast_input.tail(24).copy()
 
-    x = forecast_input["time_index"].values
-    y = forecast_input["average_price"].values
+    if len(recent_df) < 12:
+        recent_df = forecast_input.tail(12).copy()
 
-    slope, intercept = np.polyfit(x, y, 1)
+    first_price = recent_df["average_price"].iloc[0]
+    last_price = recent_df["average_price"].iloc[-1]
+
+    # Safe monthly growth calculation
+    if first_price > 0 and last_price > 0 and len(recent_df) > 1:
+        monthly_growth = (last_price / first_price) ** (1 / (len(recent_df) - 1)) - 1
+    else:
+        monthly_growth = 0
+
+    # Keep forecast realistic:
+    # Maximum monthly growth: +1.5%
+    # Maximum monthly decline: -1.0%
+    monthly_growth = max(min(monthly_growth, 0.015), -0.01)
 
     last_date = forecast_input["date"].max()
-    future_dates = pd.date_range(start=last_date + pd.DateOffset(months=1), periods=months, freq="MS")
-    future_index = np.arange(len(forecast_input), len(forecast_input) + months)
+    last_avg_price = forecast_input["average_price"].iloc[-1]
+
+    future_dates = pd.date_range(
+        start=last_date + pd.DateOffset(months=1),
+        periods=months,
+        freq="MS"
+    )
+
+    forecast_prices = []
+
+    for i in range(1, months + 1):
+        forecast_price = last_avg_price * ((1 + monthly_growth) ** i)
+
+        # Safety floor:
+        # Forecast cannot go below 70% of latest monthly average price.
+        forecast_price = max(forecast_price, last_avg_price * 0.70)
+
+        forecast_prices.append(forecast_price)
 
     forecast_df = pd.DataFrame({
         "date": future_dates,
-        "time_index": future_index,
-        "forecast_average_price": intercept + slope * future_index
+        "time_index": range(len(forecast_input), len(forecast_input) + months),
+        "forecast_average_price": forecast_prices
     })
 
     return forecast_df, forecast_input
